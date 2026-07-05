@@ -7,14 +7,14 @@ import { Icon } from '../engine/icons';
 const pick = (lang: Lang) => (en: string, hi: string) => (lang === 'en' ? en : hi);
 const art = (name: string, size = 48) => <LottiePlayer name={name} size={size} />;
 
-/** F — Family nutrition: snap the fridge → AI sees ingredients → a nourishing meal → cook-along.
+/** F — Kitchen nutrition: snap the fridge → AI sees ingredients → a nourishing meal → cook-along.
  *  The headline "magic" flow. No medical claims — nutrition framing only. */
 export async function runNutrition(api: ConvoApi, lang: Lang) {
   const L = pick(lang);
 
   await api.saathi(
     <>
-      {L('Let’s turn what’s already in your kitchen into a nourishing meal for the family. ', 'जो आपकी रसोई में है उसी से परिवार के लिए एक पौष्टिक खाना बनाते हैं। ')}
+      {L('Let’s turn what’s already in your kitchen into a nourishing meal for tonight. ', 'जो आपकी रसोई में है उसी से आज रात के लिए एक पौष्टिक खाना बनाते हैं। ')}
       <b>{L('Snap a photo of your fridge or shelf 📸', 'फ्रिज या शेल्फ की फोटो लीजिए 📸')}</b>
     </>
   );
@@ -32,7 +32,7 @@ export async function runNutrition(api: ConvoApi, lang: Lang) {
       items={[L('🍅 Tomatoes', '🍅 टमाटर'), L('🥬 Spinach', '🥬 पालक'), L('🧅 Onion', '🧅 प्याज़'), L('🧄 Garlic', '🧄 लहसुन'), L('🧀 Paneer', '🧀 पनीर'), L('🥛 Curd', '🥛 दही')]}
     />
   );
-  await api.saathi(L('Lovely — plenty of iron and protein here. Here’s a wholesome dinner for the family:', 'बढ़िया — यहाँ खूब आयरन और प्रोटीन है। परिवार के लिए एक पौष्टिक डिनर:'));
+  await api.saathi(L('Lovely — plenty of iron and protein here. Here’s a wholesome dinner for tonight:', 'बढ़िया — यहाँ खूब आयरन और प्रोटीन है। आज रात के लिए एक पौष्टिक डिनर:'));
 
   await api.card(
     <InfoCard
@@ -72,14 +72,14 @@ export async function runNutrition(api: ConvoApi, lang: Lang) {
   }
   await api.saathi(
     <>
-      <Icon.check /> {L('Enjoy the meal — a photo just became dinner for your whole family. 💜', 'खाने का आनंद लें — एक फोटो पूरे परिवार का डिनर बन गई। 💜')}
+      <Icon.check /> {L('Enjoy the meal — a photo just became a home-cooked dinner. 💜', 'खाने का आनंद लें — एक फोटो घर के बने डिनर में बदल गई। 💜')}
     </>
   );
   await api.card(
     <FinalNote>
       {L(
-        'This is the magic: no typing, no searching. A photo of your kitchen became a nourishing, home-style meal your family can cook together tonight.',
-        'यही जादू है: न टाइपिंग, न खोज। रसोई की एक फोटो पूरे परिवार के लिए आज रात का पौष्टिक, घर जैसा खाना बन गई।'
+        'This is the magic: no typing, no searching. A photo of your kitchen became a nourishing, home-style meal you can cook tonight.',
+        'यही जादू है: न टाइपिंग, न खोज। रसोई की एक फोटो आज रात के पौष्टिक, घर जैसे खाने में बदल गई।'
       )}
     </FinalNote>
   );

@@ -153,7 +153,7 @@ function NewSections({ L, onOpen, onHub }: { L: (e: string, h: string) => string
       {/* 03 · For You — magic nutrition hero + daily carousel + actions */}
       <SectionHeader title={L('Start here', 'यहाँ से शुरू करें')} />
       <NutritionHero L={L} onOpen={onOpen} />
-      <SectionHeader title={L('Aaj ke liye', 'आज के लिए')} sub={L('Tap to begin — for the whole family', 'शुरू करने दबाएँ — पूरे परिवार के लिए')} />
+      <SectionHeader title={L('Aaj ke liye', 'आज के लिए')} sub={L('Tap to begin — your daily moments', 'शुरू करने दबाएँ — आपके रोज़ के पल')} />
       <AajKeLiye L={L} onOpen={onOpen} />
       <div className="cards">
         <ActionCard icon="activity" tone="tri" title={L('Someone unwell at home?', 'घर में कोई ठीक नहीं?')} sub={L('Tell me who & what — I’ll guide you, gently.', 'बताइए किसे व क्या — मैं आराम से मार्गदर्शन करूँगी।')} onClick={() => onOpen('triage')} />
@@ -198,9 +198,9 @@ function ReturningSections({ L, onOpen }: { L: (e: string, h: string) => string;
       </div>
 
       {/* 03 · For You — magic nutrition hero + daily carousel + actions */}
-      <SectionHeader title={L('For your family today', 'आज आपके परिवार के लिए')} />
+      <SectionHeader title={L('For you today', 'आज आपके लिए')} />
       <NutritionHero L={L} onOpen={onOpen} />
-      <SectionHeader title={L('Aaj ke liye', 'आज के लिए')} sub={L('Tap to begin — for the whole family', 'शुरू करने दबाएँ — पूरे परिवार के लिए')} />
+      <SectionHeader title={L('Aaj ke liye', 'आज के लिए')} sub={L('Tap to begin — your daily moments', 'शुरू करने दबाएँ — आपके रोज़ के पल')} />
       <AajKeLiye L={L} onOpen={onOpen} />
       <div className="cards">
         <ActionCard icon="carePulse" tone="care" title={L('Evening walk reminder for Papa', 'पापा के लिए शाम की सैर रिमाइंडर')} sub={L('A gentle nudge, in your own voice.', 'आपकी अपनी आवाज़ में एक प्यारा इशारा।')} onClick={() => onOpen('care')} />
@@ -256,7 +256,7 @@ function NutritionHero({ L, onOpen }: { L: (e: string, h: string) => string; onO
       lottie="lottie-mortar"
       grad="linear-gradient(145deg,#6d17ce,#8a3ee0 45%,#0078ad)"
       kicker={L('📸 Snap your kitchen · new', '📸 रसोई की फोटो · नया')}
-      title={L('Tonight’s family meal', 'आज परिवार का खाना')}
+      title={L('Tonight’s meal', 'आज का खाना')}
       sub={L('A photo → a nourishing recipe → cook-along, by voice.', 'फोटो → पौष्टिक रेसिपी → साथ बनाएँ, आवाज़ में।')}
       cta={L('Snap & cook', 'फोटो लें')}
       onClick={() => onOpen('nutrition')}
@@ -268,7 +268,7 @@ function NutritionHero({ L, onOpen }: { L: (e: string, h: string) => string; onO
 function AajKeLiye({ L, onOpen }: { L: (e: string, h: string) => string; onOpen: (f: FlowKey) => void }) {
   const cards: { flow: FlowKey; lottie: string; kicker: string; title: string; sub: string; grad: string }[] = [
     { flow: 'remedy-featured', lottie: 'motion-warmdrink', kicker: L('Aaj ka nuskha', 'आज का नुस्खा'), title: L('Haldi–Adrak Kaadha', 'हल्दी–अदरक काढ़ा'), sub: L('A warm cup for the season', 'मौसम के लिए गरम कप'), grad: 'linear-gradient(150deg,#12b998,#014c3b)' },
-    { flow: 'exercise', lottie: 'lottie-yoga', kicker: L('Aaj ka exercise', 'आज का exercise'), title: L('5-min family stretch', '5 मिनट फैमिली स्ट्रेच'), sub: L('Follow-along video ▶', 'साथ चलने वाला वीडियो ▶'), grad: 'linear-gradient(150deg,#1a90c4,#04355a)' },
+    { flow: 'exercise', lottie: 'lottie-yoga', kicker: L('Aaj ka exercise', 'आज का exercise'), title: L('5-min morning stretch', '5 मिनट मॉर्निंग स्ट्रेच'), sub: L('Follow-along video ▶', 'साथ चलने वाला वीडियो ▶'), grad: 'linear-gradient(150deg,#1a90c4,#04355a)' },
     { flow: 'dhyan', lottie: 'lottie-meditation', kicker: L('Aaj ka dhyan', 'आज का ध्यान'), title: L('3-min calm', '3 मिनट सुकून'), sub: L('Reset with your breath', 'साँस से ताज़गी'), grad: 'linear-gradient(150deg,#6d17ce,#310064)' },
   ];
   return (

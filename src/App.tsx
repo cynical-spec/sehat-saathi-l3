@@ -44,7 +44,7 @@ function flowTitle(flow: FlowKey, story: Story, lang: Lang): string {
     case 'care':
       return L('Reminders', 'रिमाइंडर');
     case 'nutrition':
-      return L('Family Nutrition', 'परिवार का पोषण');
+      return L('Kitchen nutrition', 'रसोई का पोषण');
     case 'exercise':
       return L('Aaj ka exercise', 'आज का exercise');
     case 'dhyan':

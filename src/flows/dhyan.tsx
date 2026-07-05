@@ -26,7 +26,7 @@ export async function runDhyan(api: ConvoApi, lang: Lang) {
     />
   );
 
-  const go = await api.choices([{ value: 'go', label: L('Begin together', 'साथ में शुरू करें') }]);
+  const go = await api.choices([{ value: 'go', label: L('Begin', 'शुरू करें') }]);
   if (go) await api.me(L('Begin', 'शुरू करें'));
 
   await api.card(<div className="dhyan-stage"><LottiePlayer name="lottie-meditation" size={150} /></div>);

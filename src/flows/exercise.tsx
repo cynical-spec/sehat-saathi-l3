@@ -12,7 +12,7 @@ export async function runExercise(api: ConvoApi, lang: Lang) {
 
   await api.saathi(
     <>
-      {L('Aaj ka exercise 🧘 — a gentle 5-minute stretch the whole family can do together. ', 'आज का exercise 🧘 — 5 मिनट का हल्का स्ट्रेच जो पूरा परिवार साथ कर सके। ')}
+      {L('Aaj ka exercise 🧘 — a gentle 5-minute stretch, just for you. ', 'आज का exercise 🧘 — 5 मिनट का हल्का स्ट्रेच, सिर्फ़ आपके लिए। ')}
       {L('No equipment, no rush.', 'न कोई सामान, न जल्दी।')}
     </>
   );
@@ -34,20 +34,20 @@ export async function runExercise(api: ConvoApi, lang: Lang) {
   ]);
   if (done === 'remind') {
     await api.me(L('Remind me daily', 'रोज़ याद दिलाओ'));
-    await api.saathi(L('Done — I’ll nudge the family every morning at 7. A little movement, together. 🌿', 'हो गया — हर सुबह 7 बजे परिवार को याद दिलाऊँगी। थोड़ी हलचल, साथ में। 🌿'));
+    await api.saathi(L('Done — I’ll nudge you every morning at 7. A little movement to start the day. 🌿', 'हो गया — हर सुबह 7 बजे याद दिलाऊँगी। दिन की शुरुआत थोड़ी हलचल से। 🌿'));
   } else {
     await api.me(L('Done ✓ Felt good', 'हो गया ✓ अच्छा लगा'));
     await api.saathi(
       <>
-        <Icon.check /> {L('Lovely — that’s movement for the whole family today. 🌿', 'बढ़िया — आज पूरे परिवार के लिए हलचल हो गई। 🌿')}
+        <Icon.check /> {L('Lovely — that’s your movement done for today. 🌿', 'बढ़िया — आज की आपकी हलचल हो गई। 🌿')}
       </>
     );
   }
   await api.card(
     <FinalNote>
       {L(
-        'A real guided video, right inside the conversation — the family follows along together, no app-hopping, no searching.',
-        'एक असली गाइडेड वीडियो, बातचीत के अंदर ही — परिवार साथ-साथ करता है, न ऐप बदलना, न खोजना।'
+        'A real guided video, right inside the conversation — you follow along right here, no app-hopping, no searching.',
+        'एक असली गाइडेड वीडियो, बातचीत के अंदर ही — आप यहीं साथ-साथ करते हैं, न ऐप बदलना, न खोजना।'
       )}
     </FinalNote>
   );
