@@ -474,4 +474,55 @@ body{
 .hh-story-sub{font-size:14px;opacity:.85;margin-bottom:16px;}
 .hh-story-body{font-size:14.5px;line-height:1.6;opacity:.9;margin-bottom:26px;}
 
+/* ═══ Magic chat components ═══ */
+.ytcard,.scan,.det,.rec,.playbar,.dhyan-stage{align-self:flex-start;max-width:calc(100% - 39px);width:calc(100% - 39px);margin-left:39px;animation:rise .34s var(--decel) both;}
+
+/* YouTube embed */
+.yt-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 8px 22px rgba(0,0,0,.2);}
+.yt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.yt-cap{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-top:8px;} .yt-cap svg{width:15px;height:15px;color:var(--sparkle);}
+
+/* Fridge / kitchen AI scan */
+.scan-photo{position:relative;height:184px;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#eef3f7,#d9e3ec);border:1px solid var(--stroke);}
+.scan-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;justify-items:center;padding:16px;font-size:36px;}
+.scan-grid span{filter:drop-shadow(0 2px 4px rgba(0,0,0,.12));animation:fadeInScale .4s ease-out both;}
+.scan-line{position:absolute;left:0;right:0;top:6%;height:3px;background:linear-gradient(90deg,transparent,var(--sparkle),transparent);box-shadow:0 0 14px 3px rgba(0,120,173,.55);animation:scanSweep 1.8s ease-in-out infinite;}
+@keyframes scanSweep{0%{top:6%}50%{top:88%}100%{top:6%}}
+.scan-corners i{position:absolute;width:18px;height:18px;border:2px solid var(--sparkle);opacity:.8;}
+.scan-corners i:nth-child(1){top:8px;left:8px;border-right:0;border-bottom:0;}
+.scan-corners i:nth-child(2){top:8px;right:8px;border-left:0;border-bottom:0;}
+.scan-corners i:nth-child(3){bottom:8px;left:8px;border-right:0;border-top:0;}
+.scan-corners i:nth-child(4){bottom:8px;right:8px;border-left:0;border-top:0;}
+.scan-label{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--sparkle);margin-top:9px;}
+.scan-dot{width:8px;height:8px;border-radius:50%;background:var(--sparkle);animation:twinkle 1s ease-in-out infinite;}
+
+/* Detected items */
+.det{background:var(--surface);border:1px solid var(--stroke-min);border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(12,13,16,.04);}
+.det-h{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:10px;}
+.det-row{display:flex;flex-wrap:wrap;gap:8px;}
+.det-chip{background:var(--sparkle-20);color:var(--sparkle-60);font-size:13px;font-weight:700;padding:8px 12px;border-radius:999px;}
+
+/* Nutrition tags */
+.nutri{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.nutri-tag{background:var(--secondary-20);color:var(--secondary-60);font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;letter-spacing:.02em;}
+
+/* Voice recording */
+.rec{background:#0f1a12;border-radius:16px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:11px;}
+.rec-dot{width:10px;height:10px;border-radius:50%;background:var(--error);animation:recPulse 1.2s infinite;}
+@keyframes recPulse{0%{box-shadow:0 0 0 0 rgba(225,29,46,.5)}70%{box-shadow:0 0 0 11px rgba(225,29,46,0)}100%{box-shadow:0 0 0 0 rgba(225,29,46,0)}}
+.rec-wave{display:flex;align-items:center;gap:3px;height:40px;}
+.rec-wave i{width:4px;background:#5fbf7e;border-radius:2px;animation:waveBar .8s ease-in-out infinite;}
+@keyframes waveBar{0%,100%{height:8px}50%{height:34px}}
+.rec-lbl{font-size:12.5px;color:#aecdb8;font-weight:600;}
+
+/* Playback bar */
+.playbar{background:var(--minimal);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.playbar-btn{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;} .playbar-btn svg{width:18px;height:18px;}
+.playbar-body{flex:1;min-width:0;}
+.playbar-text{font-size:14px;font-weight:600;color:var(--ink);}
+.playbar-wave{display:flex;align-items:flex-end;gap:2px;height:20px;margin:6px 0 3px;} .playbar-wave i{width:3px;background:var(--primary);opacity:.45;border-radius:2px;}
+.playbar-meta{font-size:11px;color:var(--ink-mute);font-weight:700;}
+
+.dhyan-stage{display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(180deg,var(--primary-20),#fff);border-radius:20px;}
+
 .hidden{display:none!important;}

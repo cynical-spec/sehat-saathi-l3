@@ -150,17 +150,11 @@ function NewSections({ L, onOpen, onHub }: { L: (e: string, h: string) => string
         <span className="up-go"><Icon.chevron /></span>
       </button>
 
-      {/* 03 · For You — capability, ≥1 discovery (Lottie feature card) */}
+      {/* 03 · For You — magic nutrition hero + daily carousel + actions */}
       <SectionHeader title={L('Start here', 'यहाँ से शुरू करें')} />
-      <FeatureCard
-        lottie="motion-warmdrink"
-        grad="linear-gradient(150deg,#12b998,#014c3b)"
-        kicker={L('Aaj ka nuskha · discover', 'आज का नुस्खा · नया')}
-        title={L('Haldi–Adrak Kaadha', 'हल्दी–अदरक काढ़ा')}
-        sub={L('A warm cup for the season — made step-by-step, by voice.', 'मौसम के लिए गरम कप — आवाज़ में कदम-दर-कदम।')}
-        cta={L('Make it', 'बनाएँ')}
-        onClick={() => onOpen('remedy-featured')}
-      />
+      <NutritionHero L={L} onOpen={onOpen} />
+      <SectionHeader title={L('Aaj ke liye', 'आज के लिए')} sub={L('Tap to begin — for the whole family', 'शुरू करने दबाएँ — पूरे परिवार के लिए')} />
+      <AajKeLiye L={L} onOpen={onOpen} />
       <div className="cards">
         <ActionCard icon="activity" tone="tri" title={L('Someone unwell at home?', 'घर में कोई ठीक नहीं?')} sub={L('Tell me who & what — I’ll guide you, gently.', 'बताइए किसे व क्या — मैं आराम से मार्गदर्शन करूँगी।')} onClick={() => onOpen('triage')} />
         <ActionCard icon="bell" tone="rem" title={L('Reminders in your own voice', 'आपकी आवाज़ में रिमाइंडर')} sub={L('So a loved one never misses what matters.', 'ताकि अपने कभी कुछ ज़रूरी न भूलें।')} onClick={() => onOpen('care')} />
@@ -203,17 +197,11 @@ function ReturningSections({ L, onOpen }: { L: (e: string, h: string) => string;
         </button>
       </div>
 
-      {/* 03 · For You — ranked, Lottie feature + actions (≥1 discovery) */}
+      {/* 03 · For You — magic nutrition hero + daily carousel + actions */}
       <SectionHeader title={L('For your family today', 'आज आपके परिवार के लिए')} />
-      <FeatureCard
-        lottie="motion-warmdrink"
-        grad="linear-gradient(150deg,#12b998,#014c3b)"
-        kicker={L('Aaj ka nuskha · discover', 'आज का नुस्खा · नया')}
-        title={L('Haldi–Adrak Kaadha', 'हल्दी–अदरक काढ़ा')}
-        sub={L('A warm cup for the season — made step-by-step, by voice.', 'मौसम के लिए गरम कप — आवाज़ में कदम-दर-कदम।')}
-        cta={L('Make it', 'बनाएँ')}
-        onClick={() => onOpen('remedy-featured')}
-      />
+      <NutritionHero L={L} onOpen={onOpen} />
+      <SectionHeader title={L('Aaj ke liye', 'आज के लिए')} sub={L('Tap to begin — for the whole family', 'शुरू करने दबाएँ — पूरे परिवार के लिए')} />
+      <AajKeLiye L={L} onOpen={onOpen} />
       <div className="cards">
         <ActionCard icon="carePulse" tone="care" title={L('Evening walk reminder for Papa', 'पापा के लिए शाम की सैर रिमाइंडर')} sub={L('A gentle nudge, in your own voice.', 'आपकी अपनी आवाज़ में एक प्यारा इशारा।')} onClick={() => onOpen('care')} />
         <ActionCard icon="wind" tone="tri" title={L('Breathe before bed', 'सोने से पहले साँस')} sub={L('4 calm minutes to wind down.', '4 मिनट का सुकून, सोने से पहले।')} onClick={() => onOpen('breathe-featured')} />
@@ -258,5 +246,42 @@ function DiscChip({ icon, label, onClick }: { icon: keyof typeof Icon; label: st
       <IconC />
       {label}
     </button>
+  );
+}
+
+/* Magic nutrition hero — snap fridge → family meal */
+function NutritionHero({ L, onOpen }: { L: (e: string, h: string) => string; onOpen: (f: FlowKey) => void }) {
+  return (
+    <FeatureCard
+      lottie="lottie-mortar"
+      grad="linear-gradient(145deg,#6d17ce,#8a3ee0 45%,#0078ad)"
+      kicker={L('📸 Snap your kitchen · new', '📸 रसोई की फोटो · नया')}
+      title={L('Tonight’s family meal', 'आज परिवार का खाना')}
+      sub={L('A photo → a nourishing recipe → cook-along, by voice.', 'फोटो → पौष्टिक रेसिपी → साथ बनाएँ, आवाज़ में।')}
+      cta={L('Snap & cook', 'फोटो लें')}
+      onClick={() => onOpen('nutrition')}
+    />
+  );
+}
+
+/* Aaj ke liye — animated daily carousel: nuskha · exercise · dhyan */
+function AajKeLiye({ L, onOpen }: { L: (e: string, h: string) => string; onOpen: (f: FlowKey) => void }) {
+  const cards: { flow: FlowKey; lottie: string; kicker: string; title: string; sub: string; grad: string }[] = [
+    { flow: 'remedy-featured', lottie: 'motion-warmdrink', kicker: L('Aaj ka nuskha', 'आज का नुस्खा'), title: L('Haldi–Adrak Kaadha', 'हल्दी–अदरक काढ़ा'), sub: L('A warm cup for the season', 'मौसम के लिए गरम कप'), grad: 'linear-gradient(150deg,#12b998,#014c3b)' },
+    { flow: 'exercise', lottie: 'lottie-yoga', kicker: L('Aaj ka exercise', 'आज का exercise'), title: L('5-min family stretch', '5 मिनट फैमिली स्ट्रेच'), sub: L('Follow-along video ▶', 'साथ चलने वाला वीडियो ▶'), grad: 'linear-gradient(150deg,#1a90c4,#04355a)' },
+    { flow: 'dhyan', lottie: 'lottie-meditation', kicker: L('Aaj ka dhyan', 'आज का ध्यान'), title: L('3-min calm', '3 मिनट सुकून'), sub: L('Reset with your breath', 'साँस से ताज़गी'), grad: 'linear-gradient(150deg,#6d17ce,#310064)' },
+  ];
+  return (
+    <div className="hh-stories hh-scroll">
+      {cards.map((c, i) => (
+        <button key={i} className="storycard" style={{ background: c.grad }} onClick={() => onOpen(c.flow)}>
+          <div className="storycard-lot"><LottiePlayer name={c.lottie} size={72} /></div>
+          <div className="storycard-kick">{c.kicker}</div>
+          <div className="storycard-title">{c.title}</div>
+          <div className="storycard-sub">{c.sub}</div>
+          <div className="storycard-go">{L('Begin', 'शुरू करें')} <Icon.chevron /></div>
+        </button>
+      ))}
+    </div>
   );
 }

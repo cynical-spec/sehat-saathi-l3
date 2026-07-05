@@ -1,189 +1,129 @@
 import type { ConvoApi } from '../engine/conversation';
 import type { Lang } from '../i18n/I18nContext';
-import { AdviceCard, WatchCard, CallCard, DoctorCard, InfoCard, FinalNote } from '../engine/cards';
-import { Icon } from '../engine/icons';
-import { HOUSEHOLD } from '../data/personas';
+import { AdviceCard, WatchCard, CallCard, InfoCard, RecordCard, PlayBar, FinalNote } from '../engine/cards';
+import { runRemedies } from './remedies';
 
 const pick = (lang: Lang) => (en: string, hi: string) => (lang === 'en' ? en : hi);
 
-/** F1 (household) — pick who's unwell; toddler path shows careful triage + auto-escalation. */
+/** "Not well?" — gentle, non-diagnostic home-comfort guidance that flows into a soothing remedy.
+ *  Safety: no diagnoses, no vitals, no scary escalation — comfort + a clear "see a doctor if". */
 export async function runTriageHousehold(api: ConvoApi, lang: Lang) {
   const L = pick(lang);
-  await api.saathi(L('Who isn’t well?', 'किसकी तबीयत ठीक नहीं?'));
-  await api.choices(
-    HOUSEHOLD.map((m) => ({
-      value: m.key,
-      label: L(m.nameEn, m.nameHi),
-      sub: L(m.metaEn, m.metaHi),
-      condition: m.condition,
-    }))
-  );
-  // Demo anchors on Aarav (3 yrs) — the highest-stakes, most L3-defining case.
-  await api.me(L('Aarav', 'आरव'));
-  await api.saathi(L('Okay — Aarav, 3. Because he’s little, I’ll be extra careful. What’s happening?', 'ठीक है — आरव, 3 साल। छोटा है इसलिए मैं ज़्यादा सावधानी रखूँगी। क्या हो रहा है?'));
-  await api.me(L('Fever since evening, feels hot and cranky.', 'शाम से बुखार है, गरम है और चिड़चिड़ा है।'), true);
-  await api.saathi(L('A few quick things — any of these right now?', 'कुछ जल्दी की बातें — इनमें से कुछ अभी है?'));
-  const flag = await api.choices([
-    { value: 'rash', label: L('Rash on skin', 'त्वचा पर दाने'), ghost: true },
-    { value: 'breath', label: L('Fast breathing', 'तेज़ साँस'), ghost: true },
-    { value: 'fluids', label: L('Refusing fluids', 'पानी नहीं पी रहा'), ghost: true },
-    { value: 'none', label: L('None of these', 'इनमें से कोई नहीं') },
+  await api.saathi(L('Who isn’t feeling their best today?', 'आज किसकी तबीयत थोड़ी ठीक नहीं?'));
+  await api.choices([
+    { value: 'aarav', label: L('Aarav', 'आरव'), sub: L('son', 'बेटा') },
+    { value: 'papa', label: L('Papa', 'पापा'), sub: L('father', 'पिता') },
+    { value: 'maa', label: L('Maa', 'माँ'), sub: L('mother', 'माँ') },
   ]);
-  await api.me(flag === 'none' ? L('None of these — he’s drinking a little.', 'कोई नहीं — थोड़ा पी रहा है।') : L('One of these', 'इनमें से एक'));
+  await api.me(L('Aarav', 'आरव'));
+  await api.saathi(L('Okay. Tell me what you’re noticing — just speak, in your words.', 'ठीक है। बताइए क्या महसूस हो रहा है — बस अपने शब्दों में बोलिए।'));
+  await api.me(L('He’s a bit warm and low since evening.', 'शाम से थोड़ा गरम और सुस्त है।'), true);
+  await api.saathi(L('A couple of gentle things — is he drinking fluids and able to rest?', 'दो हल्की बातें — क्या वह तरल पी रहा है और आराम कर पा रहा है?'));
+  const ok = await api.choices([
+    { value: 'yes', label: L('Yes, drinking & resting', 'हाँ, पी रहा व आराम कर रहा') },
+    { value: 'no', label: L('Not really', 'ज़्यादा नहीं'), ghost: true },
+  ]);
+  await api.me(ok === 'yes' ? L('Yes, drinking & resting', 'हाँ, पी रहा व आराम') : L('Not really', 'ज़्यादा नहीं'));
 
   await api.saathi(L('One moment… 🤔', 'एक पल… 🤔'));
   await api.card(
     <AdviceCard
-      kicker={L('Home care · but watch closely (he’s 3)', 'घरेलू देखभाल · पर करीब से नज़र (3 साल)')}
-      kickTone="warn"
-      title={L('Likely a viral fever — you can care for him at home tonight', 'शायद वायरल बुखार — आज रात घर पर देखभाल हो सकती है')}
+      kicker={L('Home comfort · keep it gentle', 'घरेलू आराम · हल्का रखें')}
+      kickTone="ok"
+      title={L('Rest, warmth and fluids should help him feel better', 'आराम, गरमाहट और तरल से उसे बेहतर लगेगा')}
       body={L(
-        'Small sips of water often, light clothing (don’t over-cover), rest, and the fever medicine your doctor advised by his weight.',
-        'थोड़ा-थोड़ा पानी बार-बार, हल्के कपड़े (ज़्यादा न ढकें), आराम, और डॉक्टर की बताई वज़न के हिसाब से बुखार की दवा।'
+        'Keep him comfortable, offer small sips of water often, a light meal when he’s hungry, and plenty of rest. A warm kaadha can soothe too.',
+        'उसे आराम से रखें, थोड़ा-थोड़ा पानी बार-बार दें, भूख लगे तो हल्का खाना, और खूब आराम। एक गरम काढ़ा भी राहत देगा।'
       )}
-      redTitle={L('See a doctor right away if:', 'तुरंत डॉक्टर को दिखाएँ अगर:')}
+      redTitle={L('Please see a doctor if:', 'डॉक्टर को दिखाएँ अगर:')}
       redFlags={[
-        L('a rash appears, or lips/nails look bluish', 'दाने निकलें, या होंठ/नाखून नीले दिखें'),
-        L('breathing becomes fast or difficult', 'साँस तेज़ या मुश्किल हो'),
-        L('he stops drinking, or no urine for 8+ hours', 'पीना बंद कर दे, या 8+ घंटे पेशाब न आए'),
+        L('he stops drinking or seems very drowsy', 'वह पीना बंद कर दे या बहुत सुस्त लगे'),
+        L('he doesn’t improve in a day or two', 'एक-दो दिन में आराम न हो'),
+        L('you feel worried at any point — trust that', 'कभी भी चिंता हो — उस पर भरोसा करें'),
       ]}
-      buttons={
-        <>
-          <button className="btn btn--secondary">{L('Got it', 'समझ गया')}</button>
-          <button className="btn btn--primary">
-            <Icon.heart />
-            {L('Find a doctor', 'डॉक्टर खोजें')}
-          </button>
-        </>
-      }
     />
   );
-  await api.saathi(L('I’ll check on Aarav tomorrow morning. If the fever isn’t settling, I’ll help you get to a doctor.', 'कल सुबह आरव का हाल पूछूँगी। अगर बुखार कम न हो, तो डॉक्टर तक पहुँचने में मदद करूँगी।'));
-  await api.card(<WatchCard title={L('Aarav · fever', 'आरव · बुखार')} sub={L('Day 1 · watching · I’ll call tomorrow', 'दिन 1 · नज़र में · कल कॉल करूँगी')} />);
-
-  api.divider(L('Next morning', 'अगली सुबह'));
-  await api.card(<CallCard initial="S" label={L('Checking in', 'हाल पूछ रही')} name="Sehat Saathi" line={L('How is Aarav’s fever this morning?', 'आज सुबह आरव का बुखार कैसा है?')} />);
-  await api.me(L('Still there — around 101.', 'अभी भी है — करीब 101।'), true);
-  await api.saathi(L('Okay. Keep up fluids and rest — normal for day 2. I’ll check again this evening.', 'ठीक है। पानी और आराम जारी रखें — दिन 2 पर सामान्य। शाम को फिर पूछूँगी।'));
-  await api.card(<WatchCard title={L('Aarav · fever', 'आरव · बुखार')} sub={L('Day 2 · still watching', 'दिन 2 · नज़र जारी')} />);
-
-  api.divider(L('Day 3 · morning', 'दिन 3 · सुबह'));
-  await api.card(
-    <CallCard
-      danger
-      initial="!"
-      label={L('Important · calling you', 'ज़रूरी · कॉल कर रही')}
-      name={L('Aarav — day 3 of fever', 'आरव — बुखार का तीसरा दिन')}
-      line={
-        <>
-          {L('Aarav’s fever has now lasted 3 days. This is beyond home care — please have a doctor see him ', 'आरव का बुखार अब 3 दिन हो गया। यह घरेलू देखभाल से आगे है — कृपया ')}
-          <b>{L('today', 'आज')}</b>{L('.', ' डॉक्टर को दिखाएँ।')}
-        </>
-      }
-    />
-  );
-  await api.card(
-    <DoctorCard
-      name={L('Dr. Meera Joshi · Pediatrician', 'डॉ. मीरा जोशी · बाल रोग विशेषज्ञ')}
-      meta={L('Aarogya Clinic · 1.2 km away', 'आरोग्य क्लिनिक · 1.2 किमी')}
-      open={L('Open now · till 8 pm', 'अभी खुला · रात 8 बजे तक')}
-      callLabel={L('Call clinic', 'क्लिनिक कॉल')}
-      dirLabel={L('Directions', 'रास्ता')}
-    />
-  );
+  const rem = await api.choices([
+    { value: 'yes', label: L('Show a soothing remedy', 'एक राहत भरा नुस्खा दिखाएँ') },
+    { value: 'no', label: L('Just keep an eye', 'बस नज़र रखें'), ghost: true },
+  ]);
+  if (rem === 'yes') {
+    await api.me(L('Show a soothing remedy', 'एक राहत भरा नुस्खा दिखाएँ'));
+    await runRemedies(api, lang, true);
+  }
+  await api.saathi(L('I’ll gently check in tomorrow to see how Aarav is doing. 💜', 'कल हल्के से पूछूँगी कि आरव कैसा है। 💜'));
+  await api.card(<WatchCard title={L('Aarav · at home', 'आरव · घर पर')} sub={L('I’ll check in tomorrow', 'कल हाल पूछूँगी')} />);
   await api.card(
     <FinalNote>
       {L(
-        'This is L3: triage knows who Aarav is, adjusts its caution because he’s 3, opens a watch, and escalates to a doctor on its own the moment the fever crosses the safe line — across the whole household, not just you.',
-        'यही L3 है: ट्रायज जानता है आरव कौन है, 3 साल का होने से सावधानी बढ़ाता है, नज़र रखता है, और बुखार के सुरक्षित सीमा पार करते ही खुद डॉक्टर तक पहुँचाता है — पूरे परिवार के लिए, सिर्फ़ आपके लिए नहीं।'
+        'Notice what just happened: comfort, a remedy you can make now, a clear line for when to see a doctor, and a promise to check back — care that stays with you, not a one-line answer.',
+        'देखिए क्या हुआ: राहत, अभी बनने वाला नुस्खा, डॉक्टर कब दिखाना है इसकी साफ़ बात, और फिर हाल पूछने का वादा — देखभाल जो साथ रहे, कोई एक-लाइन जवाब नहीं।'
       )}
     </FinalNote>
   );
 }
 
-/** Caregiver daily loop — first-day setup + proactive orchestration across the household.
- *  Power comes from the household graph + proactivity, not from remembered weeks. */
+/** Reminder setup — starts from scratch, records in your own voice, delivered as a call.
+ *  Safety: no medicine dosages / no lab / no clinical data. */
 export async function runCaregiver(api: ConvoApi, lang: Lang) {
   const L = pick(lang);
-  api.divider(L('This morning', 'आज सुबह'));
-  await api.card(
-    <CallCard
-      initial="सु"
-      label={L('Voice reminder · Ramesh’s phone', 'आवाज़ रिमाइंडर · रमेश का फ़ोन')}
-      name={L('Sunita → Ramesh', 'सुनीता → रमेश')}
-      line={<b>{L('“Ramesh, take your medicine after breakfast.”', '“रमेश, नाश्ते के बाद दवा ले लेना।”')}</b>}
-      sub={L('▶ played in your own recorded voice · Ramesh answered · ✓ taken', '▶ आपकी रिकॉर्ड की आवाज़ में · रमेश ने उठाया · ✓ ली')}
-    />
+  await api.saathi(
+    <>
+      {L('Let’s set up a reminder in ', 'चलिए एक रिमाइंडर ')}
+      <b>{L('your own voice', 'आपकी अपनी आवाज़')}</b>
+      {L(' — they’ll get a call that sounds like you. 💜 Who is it for?', ' में सेट करते हैं — उन्हें एक कॉल आएगी जो आपकी तरह लगेगी। 💜 यह किसके लिए है?')}
+    </>
   );
-  await api.saathi(L('Ramesh took his medicine ✓. Shall I log this morning’s sugar too?', 'रमेश ने दवा ले ली ✓। आज सुबह की शुगर भी दर्ज कर दूँ?'));
-  await api.me(L('Yes — it’s 140.', 'हाँ — 140 है।'), true);
-  await api.saathi(L('Noted, 140. 👍 One thing I’ve connected —', 'दर्ज किया, 140। 👍 एक बात जो मैंने जोड़ी —'));
-  await api.card(
-    <InfoCard
-      kicker={L('I connected a few things', 'मैंने कुछ बातें जोड़ीं')}
-      kickTone="sp"
-      title={L('Today’s reading is a touch high, and lunch is planned rice-heavy', 'आज की रीडिंग थोड़ी ऊँची है, और दोपहर में चावल ज़्यादा है')}
-      body={L(
-        'Nothing alarming — but we can ease it today with a lighter plate.',
-        'घबराने की बात नहीं — पर आज हल्की थाली से इसे संभाल सकते हैं।'
-      )}
-    />
-  );
-  await api.card(
-    <InfoCard
-      kicker={L('For lunch today · from what’s usually home', 'आज दोपहर · घर की चीज़ों से')}
-      kickTone="ok"
-      title={L('Toor dal · one jowar roti · light bhindi sabzi', 'तूर दाल · एक ज्वार रोटी · हल्की भिंडी सब्ज़ी')}
-      body={L('Lighter on his sugar than rice, and high on fibre.', 'चावल से हल्का, और फाइबर से भरपूर।')}
-      buttons={
-        <>
-          <button className="btn btn--teal">{L('Show the recipe', 'रेसिपी दिखाएँ')}</button>
-          <button className="btn btn--secondary">{L('Not now', 'अभी नहीं')}</button>
-        </>
-      }
-    />
-  );
-  await api.saathi(L('His HbA1c lab is also due. Shall I book a home sample collection?', 'उनका HbA1c टेस्ट भी due है। घर से सैंपल लेने की बुकिंग कर दूँ?'));
-  const book = await api.choices([
-    { value: 'yes', label: L('Book it', 'बुक कर दो') },
-    { value: 'later', label: L('Later', 'बाद में'), ghost: true },
+  await api.choices([
+    { value: 'papa', label: L('Papa', 'पापा'), sub: L('father', 'पिता') },
+    { value: 'maa', label: L('Maa', 'माँ'), sub: L('mother', 'माँ') },
+    { value: 'aarav', label: L('Aarav', 'आरव'), sub: L('son', 'बेटा') },
   ]);
-  if (book === 'yes') {
-    await api.me(L('Yes, book it.', 'हाँ, बुक कर दो।'));
-    await api.saathi(L('Done — sample collection tomorrow, 8 am. I’ll add the result to his profile when it’s in. ✓', 'हो गया — कल सुबह 8 बजे सैंपल। रिज़ल्ट आने पर उनकी प्रोफ़ाइल में जोड़ दूँगी। ✓'));
-  } else {
-    await api.me(L('Later', 'बाद में'));
-    await api.saathi(L('No problem, I’ll remind you tomorrow.', 'कोई बात नहीं, कल याद दिला दूँगी।'));
-  }
+  await api.me(L('Papa', 'पापा'));
+  await api.saathi(L('What should I remind Papa, and when?', 'पापा को क्या और कब याद दिलाऊँ?'));
+  await api.choices([
+    { value: 'med', label: L('Take medicine · after breakfast', 'दवा लेना · नाश्ते के बाद') },
+    { value: 'walk', label: L('Evening walk · 6 pm', 'शाम की सैर · 6 बजे'), ghost: true },
+    { value: 'water', label: L('Drink water · through the day', 'पानी पीना · दिन भर'), ghost: true },
+  ]);
+  await api.me(L('Take medicine · after breakfast', 'दवा लेना · नाश्ते के बाद'));
 
-  // Self-care nudge for the caregiver
-  await api.wait(200);
-  await api.saathi(L('And one more — for you. You look after everyone; shall I keep Sunday free for your own check-up?', 'और एक बात — आपके लिए। आप सबका ख्याल रखती हैं; रविवार आपके अपने चेक-अप के लिए रख दूँ?'));
-  const me = await api.choices([
-    { value: 'ok', label: L('Okay, Sunday', 'ठीक है, रविवार') },
-    { value: 'no', label: L('Not yet', 'अभी नहीं'), ghost: true },
-  ]);
-  await api.me(me === 'ok' ? L('Okay, Sunday.', 'ठीक है, रविवार।') : L('Not yet.', 'अभी नहीं।'));
-  await api.saathi(L('Sunday it is. Someone should look after you too. 💜', 'तो रविवार तय। किसी को आपका भी ख्याल रखना चाहिए। 💜'));
+  await api.saathi(L('Now say it in your own voice — tap to record.', 'अब अपनी आवाज़ में बोलिए — रिकॉर्ड करने के लिए दबाएँ।'));
+  await api.choices([{ value: 'rec', label: L('🎙️ Record', '🎙️ रिकॉर्ड करें') }]);
+  await api.me(L('🎙️ Recording…', '🎙️ रिकॉर्ड हो रहा…'));
+  await api.card(<RecordCard label={L('Listening to your voice…', 'आपकी आवाज़ सुन रही हूँ…')} />);
+  await api.wait(1900);
+  await api.card(<PlayBar text={L('Papa, nashte ke baad dawai le lena', 'पापा, नाश्ते के बाद दवाई ले लेना')} meta={L('0:05 · your voice ✓', '0:05 · आपकी आवाज़ ✓')} />);
+  await api.saathi(L('Perfect — that’s exactly how Papa will hear you.', 'बढ़िया — पापा आपको बिल्कुल ऐसे ही सुनेंगे।'));
   await api.card(
     <InfoCard
-      kicker={L('Today · the household at a glance', 'आज · परिवार एक नज़र में')}
+      kicker={L('Reminder set ✓', 'रिमाइंडर सेट ✓')}
       kickTone="ok"
-      title={L('Everyone’s on track', 'सब ठीक चल रहा है')}
-      body={
-        <>
-          <b>{L('Ramesh', 'रमेश')}</b>{L(' — medicine ✓ · sugar logged · lab booked', ' — दवा ✓ · शुगर दर्ज · लैब बुक')}
-          <br />
-          <b>{L('You', 'आप')}</b>{L(' — check-up set for Sunday ✓', ' — रविवार चेक-अप तय ✓')}
-        </>
-      }
+      title={L('Every morning at 9:00 · Papa', 'हर सुबह 9:00 · पापा')}
+      body={L('Delivered as a gentle phone call — in your own recorded voice, on any phone.', 'एक प्यारी कॉल के रूप में — आपकी अपनी रिकॉर्ड की आवाज़ में, किसी भी फ़ोन पर।')}
     />
   );
+  const hear = await api.choices([
+    { value: 'hear', label: L('Hear how it’ll sound', 'सुनें कैसी लगेगी') },
+    { value: 'done', label: L('All done', 'हो गया'), ghost: true },
+  ]);
+  if (hear === 'hear') {
+    await api.me(L('Hear how it’ll sound', 'सुनें कैसी लगेगी'));
+    await api.card(
+      <CallCard
+        initial="सु"
+        label={L('Incoming call · in your voice', 'आती कॉल · आपकी आवाज़ में')}
+        name={L('Sunita → Papa', 'सुनीता → पापा')}
+        line={<b>{L('“Papa, nashte ke baad dawai le lena.”', '“पापा, नाश्ते के बाद दवाई ले लेना।”')}</b>}
+        sub={L('▶ played in your recorded voice · answered ✓', '▶ आपकी रिकॉर्ड आवाज़ में · उठाया ✓')}
+      />
+    );
+  }
   await api.card(
     <FinalNote>
       {L(
-        'This is L3: none of it needed weeks of history. In one morning it connected the household — his reminder in your voice, today’s sugar, the planned lunch, the due lab, and your own health — into one caring, proactive loop.',
-        'यही L3 है: इसमें हफ़्तों के इतिहास की ज़रूरत नहीं पड़ी। एक ही सुबह में इसने पूरे परिवार को जोड़ा — आपकी आवाज़ में उनका रिमाइंडर, आज की शुगर, तय दोपहर का खाना, due लैब, और आपकी अपनी सेहत — एक देखभाल भरे, proactive loop में।'
+        'This is the magic: care that reaches your loved ones even when you’re busy — in the one voice they trust most, yours. No app for them to learn, on any phone.',
+        'यही जादू है: देखभाल जो आपके व्यस्त होने पर भी अपनों तक पहुँचे — उस एक आवाज़ में जिस पर वे सबसे ज़्यादा भरोसा करते हैं, आपकी। उन्हें कोई ऐप सीखना नहीं, किसी भी फ़ोन पर।'
       )}
     </FinalNote>
   );

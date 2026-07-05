@@ -200,3 +200,104 @@ export function DoctorCard({
 export function FinalNote({ children }: { children: ReactNode }) {
   return <div className="note-final">{children}</div>;
 }
+
+/* ── Magic chat components ────────────────────────────────── */
+
+/** Embedded YouTube video (real video inside the chat). */
+export function YouTubeCard({ id, title }: { id: string; title: string }) {
+  return (
+    <div className="ytcard">
+      <div className="yt-frame">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      <div className="yt-cap">
+        <Icon.wind />
+        {title}
+      </div>
+    </div>
+  );
+}
+
+/** Simulated camera scan of the fridge/shelf, with a sweeping scan line. */
+export function ScanFrame({ label, foods }: { label: string; foods: string[] }) {
+  return (
+    <div className="scan">
+      <div className="scan-photo">
+        <div className="scan-grid">
+          {foods.map((f, i) => (
+            <span key={i} style={{ animationDelay: `${i * 90}ms` }}>{f}</span>
+          ))}
+        </div>
+        <div className="scan-line" />
+        <div className="scan-corners"><i /><i /><i /><i /></div>
+      </div>
+      <div className="scan-label">
+        <span className="scan-dot" />
+        {label}
+      </div>
+    </div>
+  );
+}
+
+/** Detected-items chip row (AI vision result). */
+export function DetectChips({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="det">
+      <div className="det-h">{title}</div>
+      <div className="det-row">
+        {items.map((it, i) => (
+          <span key={i} className="det-chip" style={{ animation: `staggerIn 300ms ease-out ${i * 70}ms both` }}>{it}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Nutrition tags for a recipe (non-medical: iron-rich, protein, fibre). */
+export function NutriTags({ tags }: { tags: string[] }) {
+  return (
+    <div className="nutri">
+      {tags.map((t, i) => (
+        <span key={i} className="nutri-tag">{t}</span>
+      ))}
+    </div>
+  );
+}
+
+/** Live voice-recording card (animated waveform). */
+export function RecordCard({ label }: { label: string }) {
+  return (
+    <div className="rec">
+      <span className="rec-dot" />
+      <div className="rec-wave">
+        {Array.from({ length: 18 }).map((_, i) => (
+          <i key={i} style={{ animationDelay: `${(i % 6) * 0.12}s` }} />
+        ))}
+      </div>
+      <div className="rec-lbl">{label}</div>
+    </div>
+  );
+}
+
+/** Playback bar for the recorded voice note. */
+export function PlayBar({ text, meta }: { text: string; meta: string }) {
+  return (
+    <div className="playbar">
+      <span className="playbar-btn"><Icon.mic /></span>
+      <div className="playbar-body">
+        <div className="playbar-text">“{text}”</div>
+        <div className="playbar-wave">
+          {Array.from({ length: 22 }).map((_, i) => (
+            <i key={i} style={{ height: `${4 + ((i * 7) % 14)}px` }} />
+          ))}
+        </div>
+        <div className="playbar-meta">{meta}</div>
+      </div>
+    </div>
+  );
+}

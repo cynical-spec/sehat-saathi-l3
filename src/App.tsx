@@ -11,10 +11,22 @@ import { runRemedies } from './flows/remedies';
 import { runBreathe } from './flows/breathe';
 import { runTriageSelf } from './flows/triage';
 import { runTriageHousehold, runCaregiver } from './flows/household';
+import { runNutrition } from './flows/nutrition';
+import { runExercise } from './flows/exercise';
+import { runDhyan } from './flows/dhyan';
 import type { Lang } from './i18n/I18nContext';
 
 export type Story = 'self' | 'household';
-export type FlowKey = 'triage' | 'remedy' | 'remedy-featured' | 'breathe' | 'breathe-featured' | 'care';
+export type FlowKey =
+  | 'triage'
+  | 'remedy'
+  | 'remedy-featured'
+  | 'breathe'
+  | 'breathe-featured'
+  | 'care'
+  | 'nutrition'
+  | 'exercise'
+  | 'dhyan';
 
 type Screen = { name: 'landing' } | { name: 'flow'; flow: FlowKey } | { name: 'hub' };
 
@@ -30,7 +42,13 @@ function flowTitle(flow: FlowKey, story: Story, lang: Lang): string {
     case 'breathe-featured':
       return L('Breathe & Relax', 'साँस लें, सुकून पाएँ');
     case 'care':
-      return L('Care for your people', 'अपनों की देखभाल');
+      return L('Reminders', 'रिमाइंडर');
+    case 'nutrition':
+      return L('Family Nutrition', 'परिवार का पोषण');
+    case 'exercise':
+      return L('Aaj ka exercise', 'आज का exercise');
+    case 'dhyan':
+      return L('Aaj ka dhyan', 'आज का ध्यान');
   }
 }
 
@@ -48,6 +66,12 @@ function runFlow(flow: FlowKey, story: Story, api: ConvoApi, lang: Lang) {
       return runBreathe(api, lang, true);
     case 'care':
       return runCaregiver(api, lang);
+    case 'nutrition':
+      return runNutrition(api, lang);
+    case 'exercise':
+      return runExercise(api, lang);
+    case 'dhyan':
+      return runDhyan(api, lang);
   }
 }
 
